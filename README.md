@@ -63,7 +63,7 @@ pip install torch torchvision opencv-python pyqt5 dlib pandas numpy pillow matpl
 * UTKFace Dataset
 * Place CSV files in root directory:
 ```bash
-data/
+datas/
 ├── utkface/
 │   ├── 1_0_0_20161219204523064.jpg
 │   └── ...
