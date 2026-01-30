@@ -10,7 +10,7 @@ from PIL import Image
 
 # Custom Dataset Class for FairFace
 class FairFaceDataset(Dataset):
-    def __init__(
+    def _init_(
         self,
         image_folder,
         csv_file,
@@ -26,10 +26,10 @@ class FairFaceDataset(Dataset):
         self.age_mapping = age_mapping
         self.transform = transform
 
-    def __len__(self):
+    def _len_(self):
         return len(self.data)
 
-    def __getitem__(self, idx):
+    def _getitem_(self, idx):
         row = self.data.iloc[idx]
         filename = row["file"]
         image_path = os.path.join(self.image_folder, filename)
@@ -55,14 +55,13 @@ def get_label_mappings(train_csv):
 
 # Multi-Task CNN Model Based on ResNet50
 class MultiTaskResNet(nn.Module):
-    def __init__(self, num_race_classes, num_age_classes):
+    def __init__(self, num_race_classes, num_age_classes):   # ← must have these two
         super(MultiTaskResNet, self).__init__()
         self.resnet = models.resnet50(pretrained=True)
-        self.resnet.fc = nn.Identity()  # Remove original fully connected layer
-        # Single output for binary classification
+        self.resnet.fc = nn.Identity()
         self.gender_head = nn.Linear(2048, 1)
-        self.race_head = nn.Linear(2048, num_race_classes)
-        self.age_head = nn.Linear(2048, num_age_classes)
+        self.race_head   = nn.Linear(2048, num_race_classes)
+        self.age_head    = nn.Linear(2048, num_age_classes)
 
     def forward(self, x):
         features = self.resnet(x)
@@ -211,8 +210,8 @@ def main():
         val_loss = validate(
             model, val_loader, criterion_gender, criterion_race, criterion_age, device
         )
-        
-        print(f"Epoch {epoch + 1}/{num_epochs}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
+        print(
+            f"Epoch {epoch + 1}/{num_epochs}, Train Loss: {train_loss:.4f}, Val Loss: {val_loss:.4f}")
 
     # Save the trained model
     torch.save(model.state_dict(), "fairface_cnn_model.pth")
